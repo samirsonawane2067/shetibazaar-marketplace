@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  passwordHash String
+  mobile       String?
+  farmName     String?
+  location     String?
+  role         String         @default("farmer")
+  avatarUrl    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  products     Product[]
+  cartItems    CartItem[]
+  wishlistItems WishlistItem[]
+  orders       Order[]
+  
+  @@map("users")
+}
+
+model Product {
+  id              Int            @id @default(autoincrement())
+  name            String
+  nameMarathi     String?
+  category        String
+  description     String?
+  price           Decimal
+  quantity        Int            @default(1)
+  unit            String?
+  location        String?
+  condition       String         @default("New")
+  tag             String?
+  imageUrl        String?
+  rating          Decimal        @default(0)
+  sellerId        Int
+  sellerName      String?
+  sellerPhone     String?
+  breed           String?
+  age             String?
+  gender          String?
+  weight          Decimal?
+  health          String?
+  milkProduction  String?
+  brand           String?
+  model           String?
+  hpCompatibility String?
+  workingWidth    String?
+  warranty        String?
+  isActive        Boolean        @default(true)
+  isApproved      Boolean        @default(true)
+  details         String[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  seller          User           @relation(fields: [sellerId], references: [id])
+  cartItems       CartItem[]
+  wishlistItems   WishlistItem[]
+  orderItems      OrderItem[]
+  
+  @@map("products")
+}
+
+model Order {
+  id              Int           @id @default(autoincrement())
+  buyerId         Int
+  totalAmount     Decimal
+  status          String        @default("pending")
+  shippingName    String?
+  shippingAddress String?
+  shippingPhone   String?
+  shippingPincode String?
+  paymentMethod   String?
+  createdAt       DateTime      @default(now())
+  
+  buyer           User          @relation(fields: [buyerId], references: [id])
+  items           OrderItem[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Decimal
+  
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+}
+
+model Category {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  marathi String?
+  icon    String?
+  image   String?
+  
+  @@map("categories")
+}
