@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
     const { category, location, minPrice, maxPrice, search, sort, limit = 50, offset = 0 } = req.query;
     
     let query = `
-      SELECT p.*, u.name as seller_name, u.phone as seller_phone 
+      SELECT p.*, u.name as seller_name, u.phone as seller_phone, u.avatar_url as seller_avatar_url
       FROM products p 
       JOIN users u ON p.seller_id = u.id 
       WHERE p.status = 'approved'
@@ -114,7 +114,7 @@ router.get('/user/mine', auth, async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT p.*, u.name as seller_name, u.phone as seller_phone, u.village as seller_village 
+      `SELECT p.*, u.name as seller_name, u.phone as seller_phone, u.village as seller_village, u.avatar_url as seller_avatar_url
        FROM products p 
        JOIN users u ON p.seller_id = u.id 
        WHERE p.id = $1`,

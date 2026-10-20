@@ -13,6 +13,7 @@ import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
 import PriceHistoryChart from '../components/PriceHistoryChart';
 import Recommendations from '../components/Recommendations';
+import { getFullImageUrl } from '../utils/imageUrl';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -102,6 +103,7 @@ const ProductDetails = () => {
   const wished = isInWishlist(productId);
   const sellerPhone = getSellerPhone(product);
   const sellerName = product.seller || product.sellerName || product.seller_name || 'Farmer Owner';
+  const sellerAvatar = getFullImageUrl(product.seller_avatar_url || product.sellerAvatarUrl);
   const productImage = product.image || product.imageUrl || product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200';
   const details = Array.isArray(product.details) ? product.details : [];
   const isInCart = cart.some(
@@ -291,8 +293,21 @@ const ProductDetails = () => {
               </div>
 
               <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-gradient-to-tr from-green-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-md">
-                  {sellerName.charAt(0).toUpperCase()}
+                <div className="w-14 h-14 bg-gradient-to-tr from-green-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-md overflow-hidden">
+                  {sellerAvatar ? (
+                    <img
+                      src={sellerAvatar}
+                      alt={`${sellerName} profile`}
+                      className="w-full h-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none';
+                        event.currentTarget.nextElementSibling.style.display = 'block';
+                      }}
+                    />
+                  ) : null}
+                  <span style={{ display: sellerAvatar ? 'none' : 'block' }}>
+                    {sellerName.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-lg font-bold text-gray-900 truncate">
