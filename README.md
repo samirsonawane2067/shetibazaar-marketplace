@@ -2,6 +2,10 @@
 
 A full-stack farmer marketplace for Maharashtra, India with React frontend and Node.js/Express backend with PostgreSQL database.
 
+## Live Demo
+
+[Visit ShetiBazaar](https://shetibazar.netlify.app/)
+
 ## Features
 
 - **User Authentication**: Registration, login with JWT, profile management
