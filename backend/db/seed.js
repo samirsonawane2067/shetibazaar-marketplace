@@ -128,7 +128,7 @@ async function seedDatabase() {
           quantity: 2,
           unit: 'piece',
           location: 'Kolhapur',
-          image_url: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=600',
+          image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp57UApgmYz-odgHZgkol8ZQtRzpB34zkwm0158twwNg&s=10',
           tag: 'Used',
           rating: 4.6,
           review_count: 15,
