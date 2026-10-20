@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { adminLogin } from '../api/auth';
 
 const AdminLogin = () => {
   const { t } = useLanguage();
@@ -19,12 +20,21 @@ const AdminLogin = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Demo admin login
-    localStorage.setItem('isAdmin', 'true');
-    navigate('/admin/dashboard');
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await adminLogin(formData.email, formData.password);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('isAdmin', 'true');
+      navigate('/admin/dashboard', { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid admin credentials');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,9 +100,6 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-gray-500 text-xs">
-            Admin: admin@shetibazaar.in / Admin@123
-          </div>
         </div>
       </div>
     </div>

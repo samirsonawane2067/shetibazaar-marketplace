@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -41,7 +42,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                    <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
                     {/* Public product & shopping routes */}
                     <Route path="/marketplace" element={<Marketplace />} />
