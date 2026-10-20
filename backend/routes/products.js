@@ -4,16 +4,10 @@ const pool = require('../db/config');
 const { auth } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const { uploadPublicFile } = require('../lib/supabaseStorage');
 
 // Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage,
@@ -136,7 +130,15 @@ router.get('/:id', async (req, res) => {
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
     const { name, name_marathi, marathi, category, description, price, quantity, unit, location, tag, details } = req.body;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    let image_url = null;
+    if (req.file) {
+      const extension = path.extname(req.file.originalname).toLowerCase() || '.jpg';
+      image_url = await uploadPublicFile(
+        req.file,
+        'products',
+        `user-${req.user.id}-${Date.now()}${extension}`
+      );
+    }
 
     if (!name || !category || !price || !quantity || !unit || !location) {
       return res.status(400).json({ message: 'Please complete all required product fields' });

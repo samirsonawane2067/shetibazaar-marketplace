@@ -4,16 +4,10 @@ const pool = require('../db/config');
 const { auth } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
-
-const uploadDirectory = path.join(__dirname, '..', 'uploads', 'profiles');
-fs.mkdirSync(uploadDirectory, { recursive: true });
+const { uploadPublicFile } = require('../lib/supabaseStorage');
 
 const profilePhotoUpload = multer({
-  storage: multer.diskStorage({
-    destination: (_req, _file, callback) => callback(null, uploadDirectory),
-    filename: (req, file, callback) => callback(null, `user-${req.user.id}-${Date.now()}${path.extname(file.originalname).toLowerCase()}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, callback) => {
     callback(null, /^image\/(jpeg|png|webp)$/.test(file.mimetype));
@@ -45,7 +39,12 @@ router.post('/profile/photo', auth, profilePhotoUpload.single('photo'), async (r
   }
 
   try {
-    const avatarUrl = `/uploads/profiles/${req.file.filename}`;
+    const extension = path.extname(req.file.originalname).toLowerCase() || '.jpg';
+    const avatarUrl = await uploadPublicFile(
+      req.file,
+      'profiles',
+      `user-${req.user.id}-${Date.now()}${extension}`
+    );
     const result = await pool.query(
       'UPDATE users SET avatar_url = $1 WHERE id = $2 RETURNING id, name, email, phone, village, district, state, pincode, farm_name, farm_size, avatar_url, role',
       [avatarUrl, req.user.id]
